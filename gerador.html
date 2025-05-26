@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gerador de Sacadas</title>
+  <title>Gerador de Imagens - Street View</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,15 +14,12 @@
     .controls {
       margin-bottom: 20px;
     }
-    select, button {
+    button {
       padding: 10px 15px;
       font-size: 16px;
       border-radius: 8px;
       border: none;
-      margin: 5px;
       cursor: pointer;
-    }
-    button {
       background-color: #3498db;
       color: white;
       transition: background-color 0.3s ease;
@@ -41,25 +38,27 @@
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       padding: 10px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
     }
     .card img {
       width: 100%;
       border-radius: 10px;
     }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Gerador de Sacadas de Casas</h1>
+  <h1>Gerador de Imagens - Google Street View</h1>
 
   <div class="controls">
-    <label for="categoria">Escolha o estilo:</label>
-    <select id="categoria">
-      <option value="modern">Moderna</option>
-      <option value="rustic">Rústica</option>
-      <option value="classic">Clássica</option>
-      <option value="minimalist">Minimalista</option>
-    </select>
     <button onclick="gerarImagens()">Gerar Imagens</button>
   </div>
 
@@ -68,26 +67,37 @@
   <script>
     function gerarImagens() {
       const galeria = document.getElementById('galeria');
-      galeria.innerHTML = ''; // Limpa a galeria
-      const categoria = document.getElementById('categoria').value;
+      galeria.innerHTML = '';
+
+      const locais = [
+        { lat: -23.55052, lng: -46.633308 }, // São Paulo
+        { lat: -22.90685, lng: -43.172896 }, // Rio de Janeiro
+        { lat: -19.916681, lng: -43.934493 }, // Belo Horizonte
+        { lat: -12.9714, lng: -38.5014 },     // Salvador
+        { lat: -3.7319, lng: -38.5267 },      // Fortaleza
+        { lat: -8.0476, lng: -34.8770 }       // Recife
+      ];
+
+      const apiKey = 'AIzaSyBoTR6J23sUUTqCIGLTljpwN7pYukPCRWU';  // Substitua aqui pela sua chave
       const largura = 600;
       const altura = 400;
-      const termos = `balcony,house,${categoria}`;
 
       for (let i = 0; i < 6; i++) {
-        const random = Math.floor(Math.random() * 10000); // número aleatório
-        const url = `https://source.unsplash.com/${largura}x${altura}/?${termos}&sig=${random}`;
+        const local = locais[Math.floor(Math.random() * locais.length)];
+        const heading = Math.floor(Math.random() * 360);
+
+        const url = `https://maps.googleapis.com/maps/api/streetview?size=${largura}x${altura}&location=${local.lat},${local.lng}&heading=${heading}&pitch=0&key=${apiKey}`;
 
         const card = document.createElement('div');
         card.className = 'card';
 
         const img = document.createElement('img');
         img.src = url;
-        img.alt = `Sacada ${i+1}`;
+        img.alt = `Street View ${i + 1}`;
 
         const btnDownload = document.createElement('a');
         btnDownload.href = url;
-        btnDownload.download = `sacada_${i+1}.jpg`;
+        btnDownload.download = `streetview_${i + 1}.jpg`;
         btnDownload.innerText = 'Baixar';
         btnDownload.style.display = 'inline-block';
         btnDownload.style.marginTop = '10px';
@@ -101,7 +111,6 @@
       }
     }
 
-    // Gera imagens automaticamente ao abrir
     gerarImagens();
   </script>
 
